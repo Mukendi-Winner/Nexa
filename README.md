@@ -1,16 +1,64 @@
-# React + Vite
+# Nexa
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Assistant Live Gemini avec camera et micro.
 
-Currently, two official plugins are available:
+## Local
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+Crée `.env.local` avec :
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```env
+GEMINI_API_KEY=your_google_ai_studio_api_key
+NEXA_LIVE_MODEL=gemini-2.5-flash-native-audio-preview-12-2025
+```
 
-## Expanding the ESLint configuration
+## Render
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Service web Node.
+
+Build command:
+
+```bash
+npm install
+```
+
+Start command:
+
+```bash
+npm start
+```
+
+Variables Render :
+
+```env
+GEMINI_API_KEY=your_google_ai_studio_api_key
+NEXA_LIVE_MODEL=gemini-2.5-flash-native-audio-preview-12-2025
+CORS_ORIGIN=https://your-netlify-site.netlify.app
+```
+
+## Netlify
+
+Build command:
+
+```bash
+npm run build
+```
+
+Publish directory:
+
+```txt
+dist
+```
+
+Variable Netlify :
+
+```env
+VITE_API_BASE_URL=https://your-render-service.onrender.com
+```
+
+Après avoir changé `VITE_API_BASE_URL`, relance un deploy Netlify. Les variables `VITE_*`
+sont injectées au moment du build.

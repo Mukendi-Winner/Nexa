@@ -104,6 +104,12 @@ function App() {
   }
 
   async function fetchLiveToken() {
+    if (import.meta.env.PROD && !API_BASE_URL) {
+      throw new Error(
+        'VITE_API_BASE_URL manque sur Netlify. Ajoute l URL Render dans les variables Netlify puis redeploie.',
+      )
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/live-token`, { method: 'POST' })
     const payload = await response.json().catch(() => ({}))
     if (!response.ok) {
