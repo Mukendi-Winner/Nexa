@@ -25,37 +25,6 @@ function base64ToInt16(base64) {
   return new Int16Array(bytes.buffer)
 }
 
-function floatToPcm16(samples) {
-  const pcm = new Int16Array(samples.length)
-  for (let i = 0; i < samples.length; i += 1) {
-    const sample = Math.max(-1, Math.min(1, samples[i]))
-    pcm[i] = sample < 0 ? sample * 0x8000 : sample * 0x7fff
-  }
-  return new Uint8Array(pcm.buffer)
-}
-
-function downsample(buffer, inputRate, outputRate) {
-  if (inputRate === outputRate) return buffer
-
-  const ratio = inputRate / outputRate
-  const length = Math.floor(buffer.length / ratio)
-  const result = new Float32Array(length)
-
-  for (let i = 0; i < length; i += 1) {
-    const start = Math.floor(i * ratio)
-    const end = Math.floor((i + 1) * ratio)
-    let sum = 0
-    let count = 0
-    for (let j = start; j < end && j < buffer.length; j += 1) {
-      sum += buffer[j]
-      count += 1
-    }
-    result[i] = count ? sum / count : 0
-  }
-
-  return result
-}
-
 function App() {
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
@@ -183,7 +152,7 @@ function App() {
 
       sessionRef.current = session
       await opened
-      startAudioStream(stream)
+      await startAudioStream(stream)
       startVideoFrames()
     } catch (error) {
       liveOpenRef.current = false
@@ -219,31 +188,61 @@ function App() {
     }
   }
 
-  function startAudioStream(stream) {
+  async function startAudioStream(stream) {
     const AudioContextCtor = window.AudioContext || window.webkitAudioContext
     const inputContext = new AudioContextCtor()
     const source = inputContext.createMediaStreamSource(stream)
+    inputContextRef.current = inputContext
+    sourceRef.current = source
+
+    if (inputContext.audioWorklet) {
+      await inputContext.audioWorklet.addModule('/nexa-mic-processor.js')
+      const processor = new AudioWorkletNode(inputContext, 'nexa-mic-processor', {
+        numberOfInputs: 1,
+        numberOfOutputs: 1,
+        channelCount: 1,
+        processorOptions: { targetSampleRate: INPUT_RATE },
+      })
+
+      processor.port.onmessage = (event) => {
+        if (!liveOpenRef.current) return
+
+        sendRealtimeInput({
+          audio: {
+            data: toBase64(new Uint8Array(event.data)),
+            mimeType: `audio/pcm;rate=${INPUT_RATE}`,
+          },
+        })
+      }
+
+      source.connect(processor)
+      processor.connect(inputContext.destination)
+      processorRef.current = processor
+      return
+    }
+
     const processor = inputContext.createScriptProcessor(4096, 1, 1)
 
     processor.onaudioprocess = (event) => {
       if (!liveOpenRef.current) return
 
       const input = event.inputBuffer.getChannelData(0)
-      const sampled = downsample(input, inputContext.sampleRate, INPUT_RATE)
-      const pcmBytes = floatToPcm16(sampled)
+      const pcm = new Int16Array(input.length)
+      for (let i = 0; i < input.length; i += 1) {
+        const sample = Math.max(-1, Math.min(1, input[i]))
+        pcm[i] = sample < 0 ? sample * 0x8000 : sample * 0x7fff
+      }
       sendRealtimeInput({
         audio: {
-          data: toBase64(pcmBytes),
-          mimeType: `audio/pcm;rate=${INPUT_RATE}`,
+          data: toBase64(new Uint8Array(pcm.buffer)),
+          mimeType: `audio/pcm;rate=${inputContext.sampleRate}`,
         },
       })
     }
 
     source.connect(processor)
     processor.connect(inputContext.destination)
-    inputContextRef.current = inputContext
     processorRef.current = processor
-    sourceRef.current = source
   }
 
   function startVideoFrames() {
@@ -300,6 +299,7 @@ function App() {
       frameTimerRef.current = null
     }
 
+    processorRef.current?.port?.close()
     processorRef.current?.disconnect()
     sourceRef.current?.disconnect()
     inputContextRef.current?.close()

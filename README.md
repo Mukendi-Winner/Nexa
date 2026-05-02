@@ -14,6 +14,7 @@ Crée `.env.local` avec :
 ```env
 GEMINI_API_KEY=your_google_ai_studio_api_key
 NEXA_LIVE_MODEL=gemini-2.5-flash-native-audio-preview-12-2025
+NEXA_LIVE_VOICE=Kore
 ```
 
 ## Render
@@ -37,6 +38,7 @@ Variables Render :
 ```env
 GEMINI_API_KEY=your_google_ai_studio_api_key
 NEXA_LIVE_MODEL=gemini-2.5-flash-native-audio-preview-12-2025
+NEXA_LIVE_VOICE=Kore
 CORS_ORIGIN=https://your-netlify-site.netlify.app
 ```
 

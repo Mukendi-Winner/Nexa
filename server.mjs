@@ -18,14 +18,29 @@ const host = process.env.HOST || (isDev ? '127.0.0.1' : '0.0.0.0')
 const publicHost = host === '0.0.0.0' ? '127.0.0.1' : host
 const allowedOrigins = parseAllowedOrigins(process.env.CORS_ORIGIN)
 const LIVE_MODEL = process.env.NEXA_LIVE_MODEL || 'gemini-3.1-flash-live-preview'
+const LIVE_VOICE = process.env.NEXA_LIVE_VOICE || 'Kore'
 const SYSTEM_INSTRUCTION =
   process.env.NEXA_SYSTEM_INSTRUCTION ||
-  'Tu es Nexa, un assistant visuel et vocal en direct. Reponds en francais, avec des phrases courtes et naturelles. Quand la camera apporte du contexte, decris ce que tu vois.'
+  [
+    'Tu es Nexa, un assistant visuel et vocal en direct.',
+    'Ton createur est Mukendi Winner, un etudiant en L3 informatique.',
+    'Si on te demande qui t a cree ou qui est ton createur, reponds clairement avec cette information.',
+    'Reponds en francais, avec des phrases courtes et naturelles.',
+    'Garde un accent francais standard et neutre; n adopte pas d accent quebecois.',
+    'Quand la camera apporte du contexte, decris ce que tu vois.',
+  ].join(' ')
 
 const liveConfig = {
   responseModalities: ['AUDIO'],
   mediaResolution: 'MEDIA_RESOLUTION_LOW',
   outputAudioTranscription: {},
+  speechConfig: {
+    voiceConfig: {
+      prebuiltVoiceConfig: {
+        voiceName: LIVE_VOICE,
+      },
+    },
+  },
   systemInstruction: SYSTEM_INSTRUCTION,
 }
 
