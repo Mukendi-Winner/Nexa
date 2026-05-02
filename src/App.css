@@ -1,0 +1,157 @@
+.app-shell {
+  min-height: 100svh;
+  background: #f7f7f7;
+}
+
+.home-screen,
+.camera-screen {
+  width: 100%;
+  min-height: 100svh;
+  margin: 0 auto;
+  background: #f7f7f7;
+}
+
+.home-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 430px;
+  padding: 178px 36px 32px 51px;
+}
+
+.home-screen h1 {
+  margin: 0;
+  color: #030303;
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1.22;
+  letter-spacing: 0;
+}
+
+.home-screen h1 span {
+  color: #6d2be8;
+}
+
+.primary-button {
+  width: 100%;
+  height: 69px;
+  border: 0;
+  border-radius: 16px;
+  color: #ffffff;
+  background: #6d2be8;
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: 0;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.primary-button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.camera-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 430px;
+  padding: 83px 16px 32px;
+}
+
+.camera-frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: min(70.5svh, 600px);
+  min-height: 500px;
+  background: #000000;
+}
+
+.camera-feed,
+.camera-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.camera-feed {
+  object-fit: cover;
+  display: block;
+  background: #000000;
+}
+
+.camera-placeholder {
+  background: #000000;
+}
+
+.capture-canvas {
+  display: none;
+}
+
+.live-button {
+  width: min(100%, 304px);
+  font-size: 28px;
+}
+
+.stop-button {
+  display: grid;
+  place-items: center;
+  width: 99px;
+  height: 99px;
+  border: 0;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #6d2be8;
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.error-text {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 116px;
+  margin: 0;
+  color: #b42318;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+}
+
+@media (min-width: 431px) {
+  .app-shell {
+    display: grid;
+    place-items: center;
+  }
+
+  .home-screen,
+  .camera-screen {
+    min-height: min(100svh, 932px);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media (max-width: 380px) {
+  .home-screen {
+    padding-left: 40px;
+  }
+
+  .home-screen h1 {
+    font-size: 50px;
+  }
+
+  .primary-button {
+    font-size: 27px;
+  }
+
+  .camera-frame {
+    min-height: 460px;
+  }
+}
